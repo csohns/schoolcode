@@ -1,0 +1,82 @@
+                        ASCII Menu Creator/Box Creator
+                               Version  1.00.00
+                          Source Code by Chris Sohns
+                       Turbo Pascal Unit by Chris Sohns
+
+This TPU was mainly written so a database I wrote could have a more user-
+friendly interface, but another reason was because a friend of mine,
+(a.k.a. QuasarMan), wrote up a LOT of menus, and he changed them frequently!!
+'WriteLn' this, 'WriteLn' that.  'GotoXY(X,Y)', 'Write('<A>  Add name')',
+'GotoXY(X,Y)', 'Write('<D>  Delete name')', and so on. . .
+    Gets pretty tedious doesn't it??  Below is the list of commands and what
+they do:
+
+
+
+            C(color, intensity)
+                     Yes, the "C" does stand for "COLOR".  A one-letter
+                     command is much easier then 'TextColor(color)'.
+                     "color" represents the text color you choose, and
+                     "intensity" represents the video intensity.
+                     (i.e.  0 = Normal Video, 1 = Low Video, 2 = High Video)
+                     Here is an example of usage:
+
+                          c(14,2);
+
+
+            BACKDROP
+                     This command creates a background for menus, like the
+                     one used in the Novell NetWare menus.
+
+            MENUCREATOR(X, Y, selection, text, menu variable)
+                     I couldn't come up with another name for this
+                     procedure, so it stuck.  "X" is the X-coordinate
+                     the menu option will start on, "Y" is the Y-coordinate
+                     the menu option will start on.  "selection"
+                     represents the menu selection used to call upon this
+                     menu option (i.e.  'A' will display "<A>").
+                     "text" represents then menu selection text
+                     (i.e.  'Add name' will display "Add name").
+                     Sorry, but the text can be only 29 charactors long.
+                     "Menu variable" is my menu control variable. If
+                     you place 'O' as this parameter, this means
+                     your menu only will have one option. A 'B' means
+                     that this option will be your first option in the
+                     menu, an 'E' means that this option will be your
+                     last option in this menu, and a 'C' means that this
+                     option will be an option that is in between the first
+                     and last one.  Here is an example of usage:
+
+                          MenuCreator(20,11,'A','Add name','B');
+                          MenuCreator(20,12,'D','Delete name','C');
+                          MenuCreator(20,13,'Q','Quit','E');
+
+
+            BOX(X, Y, length, text, Box variable)
+                     This procedure prints a box around a string of text.
+                     The "X" represents the X-cooridnate which the box will
+                     start. A zero as this parameter will place the text in
+                     the center of the screen.  The "Y" represents the
+                     Y-cooridnate which the box will start.  "Length"
+                     represents the length of the text you type in.
+                     "Box variable" is the box control variable. If you
+                     place 'O' as this parameter you only want one line of
+                     text.  A 'B' means that this is your first line of
+                     text, an 'E' means that this is your last line of text,
+                     and a 'C' means that this line of text is not the
+                     first one and not the last one.
+                     Here is an example of usage:
+
+                          Box(18,10,32,'Now is the time','B');
+                          Box(18,11,32,'     for every good man','C');
+                          Box(18,12,32,'              to come to the aid','C');
+                          Box(18,13,32,'     of his country','E');
+
+
+
+I hope you find this TPU as useful as I did.
+If you have any suggestions for future versions, please write me at:
+
+                             Chris  Sohns
+                           2815 Tartan Lane
+                   Colorado Springs,  CO 80920-5389

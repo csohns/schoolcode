@@ -1,0 +1,125 @@
+
+                        Welcome to the infamous
+
+
+       ษออออออออ    ษอออออออ    ษอออออป    ษอออออออป   บ         บ
+       บ            บ           บ     บ    บ       บ   บ         บ
+       ศอออออออป    บ           ฬอหอออผ    บ       บ   บ         บ
+               บ    บ           บ ศอป      บ       บ   บ         บ
+       ออออออออผ    ศอออออออ    บ   ศอป    ศอออออออผ   ศออออออ   ศออออออ
+
+
+
+      บ   ษอผ    ษออออออออ    ษออออออออ   ษอออออออป   ษออออออออ   ษออออออป
+      บ ษอผ      บ            บ           บ       บ   บ           บ      บ
+      ฬอน        ฬออออออออ    ฬออออออออ   ฬอออออออผ   ฬออออออออ   ฬอหออออผ
+      บ ศอป      บ            บ           บ           บ           บ ศอป
+      บ   ศอป    ศออออออออ    ศออออออออ   บ           ศออออออออ   บ   ศอป
+ 
+      The amazing, fabulous, incredible, outstanding Magic card database.
+                             (Yeah, RIGHT)
+
+        The history of this program is quite an interesting story, but 
+let's skip that.  Oh all right, I'll tell you the story.  For those of you 
+who don't want to read it or just plain don't care, skip this paragraph and
+go on to the rest of the document.  Otherwise, ENJOY!!!    This program began
+as only one character.  Then it became two characters.  And so on.  This 
+program began as an AP Computer Science assignment, and developed into a
+Magic card database after that.  Scroll Keeper was writen in Turbo Pascal 
+V 6.0.  But enough of the legal stuff.  This document is being released with 
+SK version 1.00, programed by Chris Sohns and Dan Sullivan.
+
+
+                                CONTENTS
+
+I.      Installation
+
+II.     Registration
+
+III.    Features
+
+
+
+                            I.   Installation
+
+To install Scroll Keeper, simply run INSTALL.EXE   (DUUHHH!!!)
+
+
+                           II.   Registration
+
+To obtain the registration code for Scroll Keeper, simply send $5 to
+
+                        Chris Sohns
+                        2815 Tartan Lane
+                        Colorado Springs CO 80920
+
+If you register before 2/31/96, the next version & registration are FREE!!!
+
+In the registered version, you no longer have to wait for the credits to
+roll, edit is functional, you can have more than one file saved, and there 
+are certain undocumented features (i.e. -- BUGS)  which have been programmed 
+in for your amusement.
+
+                             III.  Features
+
+1.      New list  
+                Removes the current list from memory, and starts a new one.
+
+2.      Add card
+                Input a new card into the list.
+                        Name      = Name of card
+                        Power     = Offencive rating of card
+                        Strength  = Defensive rating of card
+                        Price     = How much the card costs (DUHHH)
+
+3.      Find card
+                Search for a card in the list.
+                        You must enter the name of the card correctly for
+                        the program to find the card in the list.
+4.      Delete card
+                Deletes a card from the the list.
+                        Just enter in the name (correctly) and it will
+                        be moved to the null drive.
+                        (i.e. -- into oblivion!!!)
+
+5.      Edit card
+                Change the data of a card.
+                        If you put in the wrong info under ADD, this allows
+                        you to correct your mistakes. 
+                        (DON'T YOU DO THAT EVER AGAIN IDIOT!!! WHAT'S THE
+                        MATTER WITH YOU?!? RRRRRGGGHHH!!!)
+
+6.      Print list
+                Show the stats of the cards.
+                        Asks if you want to print a specific card 
+                        or the entire list, and displays the info to the 
+                        screen.
+
+7.      Load list
+                Load a list from a file.
+                        Retreives a list from your hard drive.
+
+8.      Save list
+                Save the list to a file.
+                        Saves a list to your hard drive.
+                        In the unregistered version, you may not have
+                        more than one save file at a time.
+
+9.      Help function
+                Press F1 for online help.
+
+10.     More function
+                Press F2 to activate MORE, which lists the following:
+                        RECORDS    = Number of cards in memory
+                        HD SIZE    = Size of your hard drive 
+                        FD SPACE   = Amount of free space on your hard drive
+                        DATA FILE  = Currently open file
+                        FREE MEM   = Amount of memory free
+                        MAX MEM    = Same as FREE MEM
+                        DOS VERS   = Shows the "REAL" DOS version
+
+11.     Screen Saver
+                Activates after a short time to prevent screen burn-in.
+
+12.     Quit
+                Don't make me explain this option.
