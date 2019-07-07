@@ -1,0 +1,559 @@
+Program MULTINET;
+
+Uses
+  CRT, DOS, ANSWERS;
+
+Type
+  ST70 = String[70];
+  ST11 = String[11];
+
+Var
+  user: ST10;
+  confname: ST11;
+  lcv: Integer;
+  ch: Char;
+  message: ST70;
+  Rmessage: String;
+  OldfTime: Longint;
+  X, Y, wX, wY: Integer;
+  NewMessage, done: Boolean;
+  InMessage: Boolean;
+
+{//////////////////////////////////////////////////////////////////////}
+Procedure c(col, int, back: Integer);
+     Begin                      {Changes text color}
+          If (col > 0) and (col < 32) then
+               TextColor(col)
+          Else TextColor(7);
+          Case int of
+               0: NormVideo;
+               1: LowVideo;
+               2: HighVideo;
+          End;
+          If (back > -1) and (back < 9) then
+               TextBackground(back);
+     End;
+{////////////////////////////////////////////////////////////////}
+    Procedure Box(X, Y, long:Integer; texts:String; BoxVar:Char);
+{////////////////////////////////////////////////}
+      Procedure spa(num:Integer);
+           Var                      {places spaces in text}
+                lcv: Integer;
+           Begin
+                For lcv := 1 to num do
+                     Write(' ');
+           End;
+{////////////////////////////////////////////////}
+         Var                        {Creates text boxes}
+              lcv, loc: Integer;
+         Begin
+              loc := 0;
+              If (BoxVar = 'B') or (BoxVar = 'O') then
+              Begin
+                   If X = 0 then
+                        Begin
+                             X := (Trunc(40 - (Length(texts) div 2)));
+                             loc := (X + Length(texts)) + 2;
+                             GotoXY(X, Y);
+                        End
+                   Else GotoXY(X, Y);
+                   c(14,2,1);
+                   Write('É');
+                   For lcv := 1 to long + 2 do
+                        Write('Í');
+                   WriteLn('»');
+              End;
+              If X = 0 then
+                   Begin
+                        X := (Trunc(40 - (Length(texts) div 2)));
+                        GotoXY(X, Y + 1);
+                   End
+              Else GotoXY(X, Y + 1);
+              c(14,2,1);
+              Write('º ');
+              c(7,2,1);
+              Write(texts);
+              spa(long - Length(texts));
+              c(14,2,1);
+              GotoXY(X + (long + 2), Y + 1);
+              Write(' º');
+              If (BoxVar = 'E') or (BoxVar = 'O') then
+              Begin
+                   GotoXY(X, Y + 2);
+                   c(14, 2, 1);
+                   Write('È');
+                   For lcv := 1 to long + 2 do
+                        Write('Í');
+                   WriteLn('¼');
+              End;
+              If loc <> 0 then
+                   GotoXY(loc, Y + 1);
+              c(7,1,0);
+         End;
+{//////////////////////////////////////////////////////////////////////}
+(*Function ExtStr(i : byte) : string;
+var
+ s : string[3];
+begin
+  Str(i,s);
+  ExtStr := s;
+end;*)
+{//////////////////////////////////////////////////////////////////////}
+Function Incoming_Message : Boolean;
+  Var
+    info : SearchRec;
+  Begin
+    FindFirst(confname,anyfile,info);
+    If DosError = 0 then
+      Begin
+        If info.Time <> OldfTime then
+          Begin
+            OldfTime := info.Time;
+            Incoming_Message := TRUE;
+          End
+          Else Incoming_Message := FALSE;
+      End
+    Else Incoming_Message := FALSE;
+  End;
+(*  Var
+    f: Text;
+  Begin
+    Assign(f,confname);
+    {$I-}
+    ReSet(f);
+    Close(f);
+    {$I+}
+    incoming_message := IOResult = 0;
+  End;*)
+{//////////////////////////////////////////////////////////////////////}
+Procedure EraseF(filename : ST11);
+  Var
+    f : File;
+  Begin
+    Assign(f,filename);
+    Erase(f);
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Function Next_Message : string;
+  Var
+    f : Text;
+    texts: ST70;
+  Begin
+    Assign(f,confname);
+    Reset(f);
+    ReadLn(f, texts);
+    Close(f);
+    Next_Message := texts;
+{    EraseF(confname);}
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Procedure Send_Message(texts : ST70);
+  Var
+  f : Text;
+  Begin
+    Assign(f,confname);
+    ReWrite(f);
+    WriteLn(f,texts);
+    Close(f);
+    Delay(200);
+{    EraseF(confname);}
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Procedure InitScreen;
+  Var
+    ConName: String;
+  Begin
+    ClrScr;
+    c(15,2,4);
+    Write('                                   MULTINET                                v1.0 ');
+    Box(1,2,76,'','B');
+    Box(1,3,76,'','C');
+    Box(1,4,76,'','C');
+    Box(1,5,76,'','C');
+    Box(1,6,76,'','C');
+    Box(1,7,76,'','C');
+    Box(1,8,76,'','C');
+    Box(1,9,76,'','C');
+    Box(1,10,76,'','C');
+    Box(1,11,76,'','E');
+    ConName := confname;
+    Delete(ConName,Length(ConName)-3,Length(ConName));
+    GotoXY(40-(Length(ConName) div 2),2);
+    c(8,1,3);
+    Write(ConName);
+    c(7,1,0);
+    GotoXY(2,14);
+    WriteLn('Commands:  -EXIT (leaves program),  -JOIN (change conference),');
+    If confname <> 'PUBLIC.DAT' then
+      WriteLn('           -PUBLIC (return to public conference)')
+    Else WriteLn;
+    WriteLn('Enter message:');
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Procedure JoinConf;
+  Var
+    lcv: Integer;
+    ConName: ST8;
+    good: Boolean;
+    pass: ST17;
+  Begin
+    good := FALSE;
+    GotoXY(2,14);
+    For lcv := 1 to 70 do
+      Write(' ');
+    WriteLn;
+    For lcv := 1 to 40 do
+      Write(' ');
+    GotoXY(1,14);
+    WriteLn('Public chat rooms availible :  PROGRAM (For all programers),');
+    WriteLn('    GEEK (For all computer "GODS"), SC (Stage Crew [password protected],');
+    WriteLn('    TEACHER (For all teachers), EXTRA (anything you want it for)');
+    WriteLn;
+    WriteLn('Private chat rooms availible:  PRIV1, PRIV2, PRIV3, PRIV4');
+    WriteLn;
+    WriteLn('Enter conference name:');
+    GotoXY(1,17);
+    For lcv := 1 to 74 do
+      Write(' ');
+    GotoXY(2,21);
+    Write('> ');
+    answer8(ConName,WhereX,WhereY);
+    WriteLn;
+    For lcv := 1 to Length(ConName) do
+      ConName[lcv] := UpCase(ConName[lcv]);
+    If ConName = 'PUBLIC' then good := TRUE
+      Else If ConName = 'GOD' then good := TRUE
+        Else If ConName = 'SC' then good := TRUE
+          Else If ConName = 'GEEK' then good := TRUE
+            Else If ConName = 'PROGRAM' then good := TRUE
+              Else If ConName = 'EXTRA' then good := TRUE
+                Else If ConName = 'PRIV1' then good := TRUE
+                  Else If ConName = 'PRIV2' then good := TRUE
+                    Else If ConName = 'PRIV3' then good := TRUE
+                      Else If ConName = 'PRIV4' then good := TRUE
+                        Else Begin
+                               Sound(950);
+                               Write('Conference does not exist!!');
+                               Delay(500);
+                               NoSound;
+                               Delay(2000);
+                             End;
+    If ConName = 'SC' then
+      Begin
+        GotoXY(2,22);
+        Write('Enter in password:  ');
+        answer17(pass,WhereX,WhereY);
+        For lcv := 1 to Length(pass) do
+          pass[lcv] := UpCase(pass[lcv]);
+        If pass <> 'GET A SCREW' then
+          Begin
+            WriteLn('        INCORRECT PASSWORD!');
+            Sound(950);
+            Delay(2000);
+            NoSound;
+            good := FALSE;
+          End;
+      End;
+    If good then
+      Begin
+        Send_Message(user+' has joined another conference.');
+        confname := ConName + '.DAT';
+        Send_Message(user+' has entered this conference.');
+      End;
+    NewMessage := TRUE;
+    InitScreen;
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Procedure NetTalk2Command(texts:ST70);
+  Begin
+    For lcv := 1 to Length(texts) do
+      texts[lcv] := UpCase(texts[lcv]);
+    If texts = '-EXIT' then done := TRUE;
+    If texts = '-JOIN' then JoinConf;
+    If texts = '-PUBLIC' then Begin
+                                Send_Message(user+' has returned to the PUBLIC conference.');
+                                confname := 'PUBLIC.DAT';
+                                Send_Message(user+' has re-entered this conference.');
+                                NewMessage := TRUE;
+                                InitScreen;
+                              End;
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Function UVerify(code:String;loc:Integer): Boolean;
+  Var
+    UName:ST10;
+  Begin
+    UName := Copy(code,loc,Length(user));
+    UVerify := user = UName;
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Procedure Evict(DestUser:ST10);
+  Begin
+    If UVerify(DestUser,1) then
+      Begin
+        Window(3,3,78,12);
+        GotoXY(wX,wY);
+        c(15,2,1);
+        WriteLn('"GOD": You have been EVICTED back to the PUBLIC conference.');
+        c(7,1,0);
+        wX := WhereX;
+        wY := WhereY;
+        Window(1,1,80,25);
+        GotoXY(X,Y);
+        Send_Message('"GOD" has EVICTED '+DestUser+' back to the PUBLIC conference.');
+        confname := 'PUBLIC.DAT';
+        Send_Message('"GOD" has EVICTED '+DestUser+' back to this conference.');
+        Sound(960);
+        Delay(500);
+        NoSound;
+        Delay(1);
+        Sound(960);
+        Delay(500);
+        NoSound;
+        Delay(1);
+        Sound(960);
+        Delay(500);
+        NoSound;
+        Delay(2000);
+        NewMessage := TRUE;
+        InitScreen;
+      End;
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Procedure LogOff(DestUser:ST10);
+  Begin
+    If UVerify(DestUser,1) then
+      Begin
+        Window(3,3,78,12);
+        GotoXY(wX,wY);
+        c(15,2,1);
+        WriteLn('"GOD": You are being LOGGED OFF for your actions!!');
+        c(7,1,0);
+        wX := WhereX;
+        wY := WhereY;
+        Window(1,1,80,25);
+        GotoXY(X,Y);
+        Send_Message('"GOD" has LOGGED OFF '+DestUser+'.');
+        Sound(960);
+        Delay(500);
+        NoSound;
+        Delay(1);
+        Sound(960);
+        Delay(500);
+        NoSound;
+        Delay(1);
+        Sound(960);
+        Delay(500);
+        NoSound;
+        Delay(2000);
+        Halt;
+      End;
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Procedure Screw(DestUser:ST10);
+  Var
+    colT,colB,X,Y,ch,sou: Integer;
+  Begin
+    If UVerify(DestUser,1) then
+      Begin
+        Window(3,3,78,12);
+        GotoXY(wX,wY);
+        c(15,2,1);
+        WriteLn('"GOD": You are SCREWED!!');
+        c(7,1,0);
+        wX := WhereX;
+        wY := WhereY;
+        Window(1,1,80,25);
+        GotoXY(X,Y);
+        Send_Message('"GOD" has SCREWED UP '+DestUser+'.  (Just for the FUN of it!!)');
+        GotoXY(X,Y);
+        NewMessage := FALSE;
+        Randomize;
+        Repeat
+          colT := Random(31)+1;
+          colB := Random(16)+1;
+          X := Random(80)+1;
+          Y := Random(24)+1;
+          ch := Random(190)+65;
+          sou := Random(1000)+37;
+          GotoXY(X,Y);
+          TextColor(colT);
+          TextBackground(colB);
+          Write(char(ch));
+          Sound(sou);
+          Delay(20);
+          NoSound;
+        Until NewMessage;
+      End;
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Procedure GetGodCommand(Rmessage:String);
+  Var
+    lcv: Integer;
+    Command: String;
+    DestUser: ST10;
+  Begin
+    lcv := 0;
+    Command := '';
+    DestUser := '';
+    Repeat
+      inc(lcv,1);
+      Command := Command + Rmessage[lcv];
+    Until Rmessage[lcv+1] = ' ';
+    Delete(Rmessage,1,Length(Command)+1);
+    DestUser := Rmessage;
+    If Command = '*EVICT' then Evict(DestUser);
+    If Command = '*LOGOFF' then LogOff(DestUser);
+    If Command = '*SCREW' then Screw(DestUser);
+    NewMessage := TRUE;
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Procedure SendGodCommand(texts:ST70);
+  Var
+    lcv: Integer;
+  Begin
+    For lcv := 1 to Length(texts) do
+      texts[lcv] := UpCase(texts[lcv]);
+    Send_Message(texts);
+    NewMessage := TRUE;
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Procedure GetPriv(Rmessage:String);
+  Begin
+    If UVerify(Rmessage,2) then
+      Begin
+        Delete(Rmessage,1,Length(user)+1);
+        If Rmessage[1] = ' ' then
+          Begin
+            Delete(Rmessage,1,1);
+            WriteLn(Rmessage);
+          End;
+      End;
+  End;
+{//////////////////////////////////////////////////////////////////////}
+Procedure SendPriv(texts:ST70);
+  Var
+    lcv: Integer;
+    DestUser: ST10;
+  Begin
+    Delete(texts,1,1);
+    lcv := 0;
+    DestUser := '';
+    Repeat
+      inc(lcv,1);
+      DestUser := DestUser + texts[lcv];
+    Until texts[lcv+1] = ' ';
+    For lcv := 1 to Length(DestUser) do
+      DestUser[lcv] := UpCase(DestUser[lcv]);
+    Delete(texts,1,Length(DestUser)+1);
+    Send_Message('!' + DestUser + ' ' + user + ': ' + texts);
+  End;
+{//////////////////////////////////////////////////////////////////////}
+
+Begin
+  OldfTime:= 0;
+  wX := 1;
+  wY := 1;
+  Rmessage := '';
+  NewMessage := TRUE;
+  done := FALSE;
+  confname := 'PUBLIC.DAT';
+  Repeat
+    c(7,1,0);
+    ClrScr;
+    Write('Enter in your user name:  ');
+    answer10(user,WhereX, WhereY);
+  Until user <> '';
+  For lcv := 1 to Length(user) do
+    user[lcv] := UpCase(user[lcv]);
+  If (user = 'GOD') or (user = '"GOD"') or (user = '"GOD') or (user = 'GOD"') then Halt;
+  InitScreen;
+  Send_Message(user + ' has logged on.');
+  Delay(200);
+  Repeat
+    If NewMessage then
+      Begin
+        message := '';
+        GotoXY(4,17);
+        For lcv := 2 to 74 do
+          Write(' ');
+        GotoXY(2,17);
+        Write('> ');
+        NewMessage := FALSE;
+        X := WhereX;
+        Y := WhereY;
+      End;
+    Repeat
+      InMessage := Incoming_Message;
+    Until keypressed or InMessage;
+    If keypressed then
+      Begin
+        ch := Readkey;
+        If ch <> #13 then
+          Begin
+            If ch = #8 then
+              Begin
+                delete(message, Length(message), Length(message));
+                ch := #0;
+                X := X - 1;
+                If X < 4 then
+                  Begin
+                    X := 4;
+                  End;
+                GotoXY(X,Y);
+                Write(' ');
+                GotoXY(X,Y);
+              End
+            Else Begin
+                   X := X + 1;
+                   If X > 74 then
+                     Begin
+                       X := 74;
+                       GotoXY(X,Y);
+                       Sound(950);
+                       Delay(1);
+                       NoSound;
+                     End
+                   Else Begin
+                          message := message + ch;
+                          If message[1] = '*' then
+                            c(8,1,0)
+                          Else c(7,1,0);
+                          Write(ch);
+                        End;
+                 End
+            End
+        Else Begin
+               Case message[1] of
+                 '-': NetTalk2Command(message);
+                 '!': SendPriv(message);
+                 '*': SendGodCommand(message);
+               Else Begin
+                      If message <> '' then
+                        Send_Message(user + ': ' + message);
+                    End;
+               End;
+               NewMessage := TRUE;
+             End;
+      End;
+    If InMessage then
+      Begin
+        Window(3,3,78,12);
+        GotoXY(wX,wY);
+        c(15,2,1);
+        Rmessage := Next_Message;
+        Case Rmessage[1] of
+          '*': GetGodCommand(Rmessage);
+          '!': GetPriv(Rmessage);
+        Else If NOT UVerify(Rmessage,1) then WriteLn(Rmessage)
+        End;
+        c(7,1,0);
+        wX := WhereX;
+        wY := WhereY;
+        Window(1,1,80,25);
+        GotoXY(X,Y);
+      End;
+  Until done;
+  Send_Message(user + ' has logged off.');
+  ClrScr;
+End.
